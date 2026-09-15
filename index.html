@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="th">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>3D Word Runner</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;font-family:system-ui,-apple-system,"Noto Sans Thai",sans-serif;background:#8ed9ff}
+#game{position:relative;width:100%;height:100%;perspective:700px;overflow:hidden;background:linear-gradient(#70cfff 0 50%,#78c66b 50%)}
+.sky{position:absolute;inset:0 0 50%;background:linear-gradient(#61c6ff,#d9f4ff)}
+.cloud{position:absolute;background:#fff;border-radius:30px;width:90px;height:28px;opacity:.9}.cloud:before,.cloud:after{content:"";position:absolute;background:#fff;border-radius:50%;width:42px;height:42px;top:-20px}.cloud:before{left:14px}.cloud:after{right:10px}
+.road{position:absolute;left:50%;bottom:-10%;width:92%;height:70%;transform:translateX(-50%) perspective(500px) rotateX(58deg);transform-origin:bottom;background:linear-gradient(90deg,#666 0 32%,#fff 32% 33%,#666 33% 66%,#fff 66% 67%,#666 67%);border-left:8px solid #eee;border-right:8px solid #eee}
+.hud{position:absolute;z-index:20;top:14px;left:12px;right:12px;display:flex;justify-content:space-between;gap:8px;color:#fff;font-weight:900;text-shadow:0 2px 4px #245}
+.pill{background:#ffffffdd;color:#334;padding:8px 12px;border-radius:18px;text-shadow:none;box-shadow:0 3px 10px #0002}
+.title{position:absolute;z-index:15;top:62px;width:100%;text-align:center;font-weight:1000;color:white;text-shadow:0 3px 0 #4850b9,0 5px 12px #0004;font-size:clamp(22px,7vw,38px)}
+.question{position:absolute;z-index:16;top:112px;left:8%;right:8%;text-align:center;background:#fffef0e8;border:3px solid white;border-radius:18px;padding:10px;font-weight:900;color:#26364d;box-shadow:0 6px 15px #0002}
+.gates{position:absolute;z-index:10;left:4%;right:4%;bottom:42%;display:flex;justify-content:space-around;gap:6px;transition:.35s}
+.gate{width:30%;min-height:92px;border:6px solid #fff;border-bottom:0;border-radius:12px 12px 0 0;background:#4f73e6dd;color:#fff;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px;font-size:clamp(15px,4vw,22px);font-weight:1000;box-shadow:0 5px 0 #334ea7}
+.runner{position:absolute;z-index:14;bottom:12%;left:50%;width:72px;height:116px;transform:translateX(-50%);transition:left .16s cubic-bezier(.2,.8,.2,1)}
+.head{position:absolute;top:0;left:17px;width:40px;height:42px;border-radius:48% 48% 44% 44%;background:#f5bd91;border:3px solid #50382d}.hair{position:absolute;top:-4px;left:12px;width:50px;height:34px;background:#5a352b;border-radius:50% 50% 35% 35%}.body{position:absolute;top:38px;left:13px;width:48px;height:50px;background:#ff6fae;border-radius:15px 15px 10px 10px}.leg{position:absolute;top:82px;width:15px;height:35px;background:#36496c;border-radius:8px;animation:run .35s infinite alternate}.l1{left:18px}.l2{left:42px;animation-direction:alternate-reverse}
+@keyframes run{to{transform:translateY(8px) rotate(8deg)}}
+.controls{position:absolute;z-index:30;bottom:18px;left:0;right:0;display:flex;justify-content:center;gap:28px}.btn{width:72px;height:58px;border:0;border-radius:20px;background:#fff;color:#4756bd;font-size:30px;font-weight:1000;box-shadow:0 6px 0 #c7d1e8}.btn:active{transform:translateY(4px);box-shadow:0 2px 0 #c7d1e8}
+.msg{position:absolute;z-index:40;top:43%;left:50%;transform:translate(-50%,-50%) scale(0);background:#fff;border-radius:24px;padding:18px 25px;font-size:25px;font-weight:1000;box-shadow:0 10px 30px #0004;transition:.2s;text-align:center}.msg.show{transform:translate(-50%,-50%) scale(1)}
+.finish{position:absolute;z-index:50;inset:0;background:#303a77e8;display:none;align-items:center;justify-content:center;text-align:center;color:white;padding:30px}.finish.show{display:flex}.card{background:white;color:#303a77;padding:28px;border-radius:28px;max-width:420px;width:100%}.restart{border:0;background:#ff6fae;color:white;padding:13px 25px;border-radius:20px;font-weight:900;font-size:18px}
+</style></head>
+<body><div id="game">
+<div class="sky"><div class="cloud" style="left:8%;top:20%"></div><div class="cloud" style="right:7%;top:32%;transform:scale(.75)"></div></div>
+<div class="road"></div>
+<div class="hud"><div class="pill">🪙 <span id="score">0</span></div><div class="pill">🧱 <span id="progress">1 / 10</span></div></div>
+<div class="title">🏃‍♀️ 3D WORD RUNNER</div><div class="question" id="question"></div>
+<div class="gates" id="gates"></div>
+<div class="runner" id="runner"><div class="hair"></div><div class="head"></div><div class="body"></div><div class="leg l1"></div><div class="leg l2"></div></div>
+<div class="controls"><button class="btn" onclick="move(-1)">◀</button><button class="btn" onclick="choose()">⬆</button><button class="btn" onclick="move(1)">▶</button></div>
+<div class="msg" id="msg"></div><div class="finish" id="finish"><div class="card"><h1>🎉 FINISH!</h1><h2 id="final"></h2><p>เก่งมาก! จบ LEVEL 1 แล้ว</p><button class="restart" onclick="location.reload()">เล่นอีกครั้ง</button></div></div>
+</div>
+<script>
+const qs=[
+["CAT แปลว่าอะไร?",["สุนัข","แมว","ปลา"],1],
+["DOG แปลว่าอะไร?",["สุนัข","นก","แมว"],0],
+["RED คือสีอะไร?",["เขียว","แดง","ฟ้า"],1],
+["BOOK คืออะไร?",["หนังสือ","โต๊ะ","ปากกา"],0],
+["APPLE คืออะไร?",["กล้วย","ส้ม","แอปเปิล"],2],
+["HAPPY หมายถึง?",["มีความสุข","เศร้า","โกรธ"],0],
+["SCHOOL คืออะไร?",["บ้าน","โรงเรียน","ตลาด"],1],
+["WATER คืออะไร?",["นม","น้ำ","ข้าว"],1],
+["SUN คืออะไร?",["ดวงจันทร์","ดาว","ดวงอาทิตย์"],2],
+["RUN หมายถึง?",["วิ่ง","นั่ง","นอน"],0]
+];
+let lane=1,i=0,score=0,locked=false;
+const runner=document.getElementById("runner"),gates=document.getElementById("gates");
+function pos(){runner.style.left=[18,50,82][lane]+"%"}
+function render(){document.getElementById("question").textContent=qs[i][0];gates.innerHTML=qs[i][1].map((x,j)=>`<div class="gate">${x}</div>`).join("");document.getElementById("progress").textContent=(i+1)+" / 10";pos()}
+function move(d){if(locked)return;lane=Math.max(0,Math.min(2,lane+d));pos()}
+function flash(t){let m=document.getElementById("msg");m.innerHTML=t;m.classList.add("show");setTimeout(()=>m.classList.remove("show"),650)}
+function choose(){if(locked)return;locked=true;let ok=lane===qs[i][2];if(ok){score+=10;document.getElementById("score").textContent=score;flash("✅ ถูกต้อง! +10 🪙")}else flash("❌ ลองใหม่ในข้อถัดไป");setTimeout(()=>{i++;locked=false;if(i>=qs.length){document.getElementById("final").textContent="คะแนน "+score+" / 100";document.getElementById("finish").classList.add("show")}else render()},750)}
+document.addEventListener("keydown",e=>{if(e.key==="ArrowLeft")move(-1);if(e.key==="ArrowRight")move(1);if(e.key==="ArrowUp"||e.key==="Enter")choose()});
+let sx=0;document.addEventListener("touchstart",e=>sx=e.touches[0].clientX,{passive:true});document.addEventListener("touchend",e=>{let dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>45)move(dx>0?1:-1)},{passive:true});
+render();
+</script></body></html>
