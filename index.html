@@ -1,58 +1,95 @@
 <!doctype html>
 <html lang="th">
 <head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<title>3D Word Runner</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<meta name="theme-color" content="#63c7ff">
+<title>3D Word Runner V2</title>
 <style>
-*{box-sizing:border-box}html,body{margin:0;height:100%;overflow:hidden;font-family:system-ui,-apple-system,"Noto Sans Thai",sans-serif;background:#8ed9ff}
-#game{position:relative;width:100%;height:100%;perspective:700px;overflow:hidden;background:linear-gradient(#70cfff 0 50%,#78c66b 50%)}
-.sky{position:absolute;inset:0 0 50%;background:linear-gradient(#61c6ff,#d9f4ff)}
-.cloud{position:absolute;background:#fff;border-radius:30px;width:90px;height:28px;opacity:.9}.cloud:before,.cloud:after{content:"";position:absolute;background:#fff;border-radius:50%;width:42px;height:42px;top:-20px}.cloud:before{left:14px}.cloud:after{right:10px}
-.road{position:absolute;left:50%;bottom:-10%;width:92%;height:70%;transform:translateX(-50%) perspective(500px) rotateX(58deg);transform-origin:bottom;background:linear-gradient(90deg,#666 0 32%,#fff 32% 33%,#666 33% 66%,#fff 66% 67%,#666 67%);border-left:8px solid #eee;border-right:8px solid #eee}
-.hud{position:absolute;z-index:20;top:14px;left:12px;right:12px;display:flex;justify-content:space-between;gap:8px;color:#fff;font-weight:900;text-shadow:0 2px 4px #245}
-.pill{background:#ffffffdd;color:#334;padding:8px 12px;border-radius:18px;text-shadow:none;box-shadow:0 3px 10px #0002}
-.title{position:absolute;z-index:15;top:62px;width:100%;text-align:center;font-weight:1000;color:white;text-shadow:0 3px 0 #4850b9,0 5px 12px #0004;font-size:clamp(22px,7vw,38px)}
-.question{position:absolute;z-index:16;top:112px;left:8%;right:8%;text-align:center;background:#fffef0e8;border:3px solid white;border-radius:18px;padding:10px;font-weight:900;color:#26364d;box-shadow:0 6px 15px #0002}
-.gates{position:absolute;z-index:10;left:4%;right:4%;bottom:42%;display:flex;justify-content:space-around;gap:6px;transition:.35s}
-.gate{width:30%;min-height:92px;border:6px solid #fff;border-bottom:0;border-radius:12px 12px 0 0;background:#4f73e6dd;color:#fff;display:flex;align-items:center;justify-content:center;text-align:center;padding:8px;font-size:clamp(15px,4vw,22px);font-weight:1000;box-shadow:0 5px 0 #334ea7}
-.runner{position:absolute;z-index:14;bottom:12%;left:50%;width:72px;height:116px;transform:translateX(-50%);transition:left .16s cubic-bezier(.2,.8,.2,1)}
-.head{position:absolute;top:0;left:17px;width:40px;height:42px;border-radius:48% 48% 44% 44%;background:#f5bd91;border:3px solid #50382d}.hair{position:absolute;top:-4px;left:12px;width:50px;height:34px;background:#5a352b;border-radius:50% 50% 35% 35%}.body{position:absolute;top:38px;left:13px;width:48px;height:50px;background:#ff6fae;border-radius:15px 15px 10px 10px}.leg{position:absolute;top:82px;width:15px;height:35px;background:#36496c;border-radius:8px;animation:run .35s infinite alternate}.l1{left:18px}.l2{left:42px;animation-direction:alternate-reverse}
-@keyframes run{to{transform:translateY(8px) rotate(8deg)}}
-.controls{position:absolute;z-index:30;bottom:18px;left:0;right:0;display:flex;justify-content:center;gap:28px}.btn{width:72px;height:58px;border:0;border-radius:20px;background:#fff;color:#4756bd;font-size:30px;font-weight:1000;box-shadow:0 6px 0 #c7d1e8}.btn:active{transform:translateY(4px);box-shadow:0 2px 0 #c7d1e8}
-.msg{position:absolute;z-index:40;top:43%;left:50%;transform:translate(-50%,-50%) scale(0);background:#fff;border-radius:24px;padding:18px 25px;font-size:25px;font-weight:1000;box-shadow:0 10px 30px #0004;transition:.2s;text-align:center}.msg.show{transform:translate(-50%,-50%) scale(1)}
-.finish{position:absolute;z-index:50;inset:0;background:#303a77e8;display:none;align-items:center;justify-content:center;text-align:center;color:white;padding:30px}.finish.show{display:flex}.card{background:white;color:#303a77;padding:28px;border-radius:28px;max-width:420px;width:100%}.restart{border:0;background:#ff6fae;color:white;padding:13px 25px;border-radius:20px;font-weight:900;font-size:18px}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;overflow:hidden;font-family:system-ui,"Noto Sans Thai",sans-serif;background:#6cc9ff}
+#game{height:100%;position:relative;overflow:hidden;background:linear-gradient(#54baff 0 44%,#d9f7ff 44% 52%,#b5e895 52% 100%)}
+.bg{position:absolute;inset:0;overflow:hidden}
+.castle{position:absolute;top:21%;left:50%;transform:translateX(-50%);width:88%;height:25%;opacity:.85}
+.tower{position:absolute;bottom:0;width:12%;height:60%;background:linear-gradient(90deg,#d7bca7,#f2d6bf,#caa98e);border-radius:8px 8px 0 0;box-shadow:inset -6px 0 #0001}
+.tower:before{content:"";position:absolute;top:-28px;left:-8%;width:116%;height:35px;background:#8c6dd8;clip-path:polygon(50% 0,100% 100%,0 100%)}
+.t1{left:2%;height:58%}.t2{left:18%;height:42%}.t3{right:18%;height:46%}.t4{right:2%;height:65%}
+.balloon{position:absolute;width:38px;height:50px;border-radius:50% 50% 45% 45%;background:linear-gradient(90deg,#f46e8a 0 33%,#ffd76b 33% 66%,#6cc9ff 66%);box-shadow:0 5px 15px #0002}
+.balloon:after{content:"";position:absolute;left:18px;top:50px;width:2px;height:28px;background:#795}
+.b1{top:16%;left:13%;transform:scale(.8)}.b2{top:10%;right:12%;transform:scale(.65)}.b3{top:27%;right:28%;transform:scale(.5)}
+.cloud{position:absolute;width:110px;height:32px;background:#fff;border-radius:40px;opacity:.8;filter:blur(.3px)}
+.cloud:before,.cloud:after{content:"";position:absolute;background:#fff;border-radius:50%}.cloud:before{width:50px;height:50px;left:18px;top:-22px}.cloud:after{width:55px;height:55px;right:14px;top:-28px}
+.c1{top:14%;left:-20px}.c2{top:19%;right:-25px;transform:scale(.75)}
+.roadwrap{position:absolute;left:50%;bottom:-12%;width:108%;height:70%;transform:translateX(-50%);perspective:480px}
+.road{position:absolute;inset:0;transform:rotateX(58deg);transform-origin:bottom;clip-path:polygon(32% 0,68% 0,100% 100%,0 100%);background:linear-gradient(90deg,#38aaf2 0 33.1%,#ff7593 33.1% 66.4%,#5bd45d 66.4%);box-shadow:0 0 0 12px #f3d5bc}
+.road:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 32.7%,#fff 32.7% 33.4%,transparent 33.4% 66%,#fff 66% 66.7%,transparent 66.7%);opacity:.9}
+.hud{position:absolute;z-index:30;inset:12px 12px auto;display:flex;justify-content:space-between;align-items:flex-start;color:#fff;font-weight:1000}
+.pause,.score,.hearts,.shield{filter:drop-shadow(0 4px 2px #0003)}
+.pause{width:55px;height:55px;border-radius:50%;background:linear-gradient(#b57b43,#774420);border:4px solid #5d351e;display:grid;place-items:center;font-size:26px}
+.rightHud{text-align:right}.score{display:inline-block;background:#765f58;border-radius:24px;padding:7px 17px;font-size:22px}.coin{color:#ffd64f}
+.hearts{font-size:27px;margin-top:5px;letter-spacing:-4px}.shield{margin-top:4px;background:#596271cc;padding:5px 10px;border-radius:15px;font-size:14px}
+.logo{position:absolute;z-index:25;top:14px;left:50%;transform:translateX(-50%);width:min(58vw,420px);text-align:center;color:#fff;font-weight:1000;text-shadow:0 4px 0 #70441e,0 6px 12px #0005}
+.logo .wood{background:linear-gradient(#9a5c2b,#633716);border:4px solid #542d13;border-radius:18px;padding:4px 12px;box-shadow:inset 0 3px #d7924b}
+.logo b{font-size:clamp(21px,6vw,38px);color:#58baff}.logo b:first-letter{color:#ffc12e}.logo small{display:block;font-size:clamp(12px,3vw,18px)}
+.level{position:absolute;z-index:26;top:80px;left:8px;background:linear-gradient(#9b622d,#704016);border:4px solid #5a3217;border-radius:10px;color:white;text-align:center;font-weight:900;padding:5px 9px;box-shadow:0 4px 7px #0003;font-size:12px}
+.question{position:absolute;z-index:24;top:26%;left:50%;transform:translateX(-50%);min-width:48%;background:#fff;border:6px solid #ff72b3;border-radius:14px;padding:9px 24px;text-align:center;font-size:clamp(25px,8vw,43px);font-weight:1000;color:#2d1d2f;box-shadow:0 6px 0 #b84c83,0 9px 20px #0003}
+.question .emoji{font-size:.9em}
+.gates{position:absolute;z-index:20;top:38%;left:13%;right:13%;height:19%;display:flex;justify-content:space-between;gap:4%}
+.gate{position:relative;width:31%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;color:white;font-weight:1000;font-size:clamp(16px,5vw,27px);text-shadow:0 2px 2px #0004;border-radius:8px 8px 2px 2px;box-shadow:inset 0 0 0 5px #ffffff22,0 8px 0 #0003}
+.gate:before{content:"";position:absolute;inset:0;border-radius:8px;background:repeating-linear-gradient(0deg,transparent 0 16px,#ffffff25 16px 18px),repeating-linear-gradient(90deg,transparent 0 25px,#ffffff20 25px 27px)}
+.gate span{position:relative;z-index:2}.gate .ico{font-size:clamp(24px,8vw,46px);margin-top:5px}
+.blue{background:#249bea}.red{background:#ef5365}.green{background:#3fc64e}
+.runner{position:absolute;z-index:22;bottom:17%;left:50%;width:92px;height:155px;transform:translateX(-50%);transition:left .16s cubic-bezier(.2,.9,.2,1);filter:drop-shadow(0 10px 5px #0003)}
+.hair{position:absolute;top:0;left:15px;width:64px;height:60px;background:#7a3e27;border-radius:50% 50% 45% 45%}
+.pony{position:absolute;top:14px;left:-4px;width:42px;height:55px;background:#6c351f;border-radius:70% 20% 70% 30%;transform:rotate(25deg);animation:pony .35s infinite alternate}
+.bow{position:absolute;top:5px;left:34px;font-size:29px;z-index:5}
+.head{position:absolute;top:25px;left:27px;width:43px;height:48px;background:#f5b58d;border-radius:45%;z-index:2}
+.body{position:absolute;top:67px;left:22px;width:53px;height:54px;background:#ff7daf;border-radius:16px 16px 8px 8px;z-index:3}
+.pack{position:absolute;top:75px;left:29px;width:40px;height:39px;background:#f5b4bd;border:3px solid #d98293;border-radius:8px;z-index:4;text-align:center;font-size:20px}
+.arm{position:absolute;top:73px;width:14px;height:45px;background:#f3ae84;border-radius:9px;transform-origin:top;animation:arm .34s infinite alternate}.a1{left:14px}.a2{right:8px;animation-direction:alternate-reverse}
+.leg{position:absolute;top:113px;width:18px;height:39px;background:#315d8b;border-radius:9px;transform-origin:top;animation:leg .34s infinite alternate}.l1{left:27px}.l2{left:54px;animation-direction:alternate-reverse}
+.shoe{position:absolute;bottom:-4px;width:25px;height:13px;background:#fff;border:3px solid #ff9fb4;border-radius:10px}
+@keyframes leg{to{transform:rotate(20deg) translateY(4px)}}@keyframes arm{to{transform:rotate(25deg)}}@keyframes pony{to{transform:rotate(10deg) translateX(-5px)}}
+.controls{position:absolute;z-index:35;bottom:14px;left:5%;right:5%;display:flex;justify-content:space-between}
+.btn{width:27vw;max-width:130px;height:76px;border-radius:25px;border:4px solid #fff;background:#ffffffd9;color:#fff;font-size:43px;font-weight:1000;box-shadow:0 7px 0 #0002;text-shadow:0 3px 2px #0002}
+.btn:nth-child(1){background:#38aaf2dd}.btn:nth-child(2){background:#ff7593dd}.btn:nth-child(3){background:#5bd45ddd}.btn:active{transform:translateY(5px);box-shadow:0 2px 0 #0002}
+.toast{position:absolute;z-index:60;left:50%;top:50%;transform:translate(-50%,-50%) scale(0);background:#fff;padding:18px 25px;border-radius:24px;font-size:25px;font-weight:1000;box-shadow:0 10px 30px #0005;transition:.18s;text-align:center}.toast.show{transform:translate(-50%,-50%) scale(1)}
+.finish{position:absolute;z-index:80;inset:0;background:#553b80e8;display:none;place-items:center;padding:25px}.finish.show{display:grid}.card{background:#fff;border-radius:28px;padding:28px;text-align:center;color:#543c72;max-width:400px}.card button{border:0;border-radius:18px;background:#ff68a4;color:#fff;font-weight:900;padding:13px 25px;font-size:18px}
 </style></head>
 <body><div id="game">
-<div class="sky"><div class="cloud" style="left:8%;top:20%"></div><div class="cloud" style="right:7%;top:32%;transform:scale(.75)"></div></div>
-<div class="road"></div>
-<div class="hud"><div class="pill">🪙 <span id="score">0</span></div><div class="pill">🧱 <span id="progress">1 / 10</span></div></div>
-<div class="title">🏃‍♀️ 3D WORD RUNNER</div><div class="question" id="question"></div>
+<div class="bg"><div class="cloud c1"></div><div class="cloud c2"></div><div class="balloon b1"></div><div class="balloon b2"></div><div class="balloon b3"></div><div class="castle"><i class="tower t1"></i><i class="tower t2"></i><i class="tower t3"></i><i class="tower t4"></i></div></div>
+<div class="roadwrap"><div class="road"></div></div>
+<div class="hud"><div class="pause">Ⅱ</div><div class="rightHud"><div class="score"><span class="coin">🪙</span> <span id="score">0</span></div><div class="hearts" id="hearts">❤️❤️❤️</div><div class="shield">🛡️ ไม่มีโล่</div></div></div>
+<div class="logo"><div class="wood"><b>3D Word Runner</b><small>ตะลุยกำแพงคำศัพท์!</small></div></div>
+<div class="level">LEVEL 1<br>โหมดฝึกสอน<br>กำแพงที่ <span id="p">1</span> / 10</div>
+<div class="question" id="question"></div>
 <div class="gates" id="gates"></div>
-<div class="runner" id="runner"><div class="hair"></div><div class="head"></div><div class="body"></div><div class="leg l1"></div><div class="leg l2"></div></div>
-<div class="controls"><button class="btn" onclick="move(-1)">◀</button><button class="btn" onclick="choose()">⬆</button><button class="btn" onclick="move(1)">▶</button></div>
-<div class="msg" id="msg"></div><div class="finish" id="finish"><div class="card"><h1>🎉 FINISH!</h1><h2 id="final"></h2><p>เก่งมาก! จบ LEVEL 1 แล้ว</p><button class="restart" onclick="location.reload()">เล่นอีกครั้ง</button></div></div>
+<div class="runner" id="runner"><div class="pony"></div><div class="hair"></div><div class="bow">🎀</div><div class="head"></div><div class="body"></div><div class="pack">🐱</div><div class="arm a1"></div><div class="arm a2"></div><div class="leg l1"><i class="shoe"></i></div><div class="leg l2"><i class="shoe"></i></div></div>
+<div class="controls"><button class="btn" onclick="move(-1)">←</button><button class="btn" onclick="hit()">↑</button><button class="btn" onclick="move(1)">→</button></div>
+<div class="toast" id="toast"></div><div class="finish" id="finish"><div class="card"><h1>🏆 ผ่าน LEVEL 1!</h1><h2 id="final"></h2><p>เก่งขึ้นได้ทุกวัน สู้ ๆ นะ!</p><button onclick="location.reload()">เล่นอีกครั้ง</button></div></div>
 </div>
 <script>
-const qs=[
-["CAT แปลว่าอะไร?",["สุนัข","แมว","ปลา"],1],
-["DOG แปลว่าอะไร?",["สุนัข","นก","แมว"],0],
-["RED คือสีอะไร?",["เขียว","แดง","ฟ้า"],1],
-["BOOK คืออะไร?",["หนังสือ","โต๊ะ","ปากกา"],0],
-["APPLE คืออะไร?",["กล้วย","ส้ม","แอปเปิล"],2],
-["HAPPY หมายถึง?",["มีความสุข","เศร้า","โกรธ"],0],
-["SCHOOL คืออะไร?",["บ้าน","โรงเรียน","ตลาด"],1],
-["WATER คืออะไร?",["นม","น้ำ","ข้าว"],1],
-["SUN คืออะไร?",["ดวงจันทร์","ดาว","ดวงอาทิตย์"],2],
-["RUN หมายถึง?",["วิ่ง","นั่ง","นอน"],0]
+const data=[
+["CAT","🐱",[["แมว","🐱"],["สุนัข","🐶"],["นก","🐦"]],0],
+["DOG","🐶",[["ปลา","🐟"],["สุนัข","🐶"],["แมว","🐱"]],1],
+["BIRD","🐦",[["นก","🐦"],["ม้า","🐴"],["หมู","🐷"]],0],
+["APPLE","🍎",[["กล้วย","🍌"],["ส้ม","🍊"],["แอปเปิล","🍎"]],2],
+["BOOK","📘",[["โต๊ะ","🪑"],["หนังสือ","📘"],["ดินสอ","✏️"]],1],
+["SUN","☀️",[["ดวงอาทิตย์","☀️"],["ดาว","⭐"],["ฝน","🌧️"]],0],
+["WATER","💧",[["นม","🥛"],["น้ำ","💧"],["ข้าว","🍚"]],1],
+["HAPPY","😊",[["เศร้า","😢"],["โกรธ","😠"],["มีความสุข","😊"]],2],
+["RUN","🏃",[["วิ่ง","🏃"],["นอน","🛌"],["นั่ง","🪑"]],0],
+["SCHOOL","🏫",[["บ้าน","🏠"],["โรงเรียน","🏫"],["ตลาด","🏪"]],1]
 ];
-let lane=1,i=0,score=0,locked=false;
-const runner=document.getElementById("runner"),gates=document.getElementById("gates");
-function pos(){runner.style.left=[18,50,82][lane]+"%"}
-function render(){document.getElementById("question").textContent=qs[i][0];gates.innerHTML=qs[i][1].map((x,j)=>`<div class="gate">${x}</div>`).join("");document.getElementById("progress").textContent=(i+1)+" / 10";pos()}
-function move(d){if(locked)return;lane=Math.max(0,Math.min(2,lane+d));pos()}
-function flash(t){let m=document.getElementById("msg");m.innerHTML=t;m.classList.add("show");setTimeout(()=>m.classList.remove("show"),650)}
-function choose(){if(locked)return;locked=true;let ok=lane===qs[i][2];if(ok){score+=10;document.getElementById("score").textContent=score;flash("✅ ถูกต้อง! +10 🪙")}else flash("❌ ลองใหม่ในข้อถัดไป");setTimeout(()=>{i++;locked=false;if(i>=qs.length){document.getElementById("final").textContent="คะแนน "+score+" / 100";document.getElementById("finish").classList.add("show")}else render()},750)}
-document.addEventListener("keydown",e=>{if(e.key==="ArrowLeft")move(-1);if(e.key==="ArrowRight")move(1);if(e.key==="ArrowUp"||e.key==="Enter")choose()});
+let i=0,lane=1,score=0,lives=3,lock=false;
+const runner=document.getElementById("runner"),toast=document.getElementById("toast");
+function setLane(){runner.style.left=[25,50,75][lane]+"%"}
+function render(){let q=data[i];document.getElementById("question").innerHTML=q[0]+' <span class="emoji">'+q[1]+'</span>';document.getElementById("p").textContent=i+1;document.getElementById("gates").innerHTML=q[2].map((a,j)=>`<div class="gate ${["blue","red","green"][j]}"><span>${a[0]}</span><span class="ico">${a[1]}</span></div>`).join("");setLane()}
+function move(d){if(lock)return;lane=Math.max(0,Math.min(2,lane+d));setLane()}
+function pop(t){toast.innerHTML=t;toast.classList.add("show");setTimeout(()=>toast.classList.remove("show"),650)}
+function hit(){if(lock)return;lock=true;let ok=lane===data[i][3];if(ok){score+=10;document.getElementById("score").textContent=score;pop("✨ ถูกต้อง! +10 🪙")}else{lives--;document.getElementById("hearts").textContent="❤️".repeat(Math.max(0,lives))+"🖤".repeat(3-Math.max(0,lives));pop("💥 ผิดจ้า!");}
+setTimeout(()=>{i++;lock=false;if(lives<=0||i>=data.length){document.getElementById("final").textContent="คะแนน "+score+" / 100";document.getElementById("finish").classList.add("show")}else render()},750)}
+document.addEventListener("keydown",e=>{if(e.key==="ArrowLeft")move(-1);if(e.key==="ArrowRight")move(1);if(e.key==="ArrowUp"||e.key==="Enter")hit()});
 let sx=0;document.addEventListener("touchstart",e=>sx=e.touches[0].clientX,{passive:true});document.addEventListener("touchend",e=>{let dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>45)move(dx>0?1:-1)},{passive:true});
 render();
 </script></body></html>
