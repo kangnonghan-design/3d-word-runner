@@ -3,93 +3,171 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
-<meta name="theme-color" content="#63c7ff">
-<title>3D Word Runner V2</title>
+<title>3D Word Runner WebGL</title>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
-html,body{margin:0;height:100%;overflow:hidden;font-family:system-ui,"Noto Sans Thai",sans-serif;background:#6cc9ff}
-#game{height:100%;position:relative;overflow:hidden;background:linear-gradient(#54baff 0 44%,#d9f7ff 44% 52%,#b5e895 52% 100%)}
-.bg{position:absolute;inset:0;overflow:hidden}
-.castle{position:absolute;top:21%;left:50%;transform:translateX(-50%);width:88%;height:25%;opacity:.85}
-.tower{position:absolute;bottom:0;width:12%;height:60%;background:linear-gradient(90deg,#d7bca7,#f2d6bf,#caa98e);border-radius:8px 8px 0 0;box-shadow:inset -6px 0 #0001}
-.tower:before{content:"";position:absolute;top:-28px;left:-8%;width:116%;height:35px;background:#8c6dd8;clip-path:polygon(50% 0,100% 100%,0 100%)}
-.t1{left:2%;height:58%}.t2{left:18%;height:42%}.t3{right:18%;height:46%}.t4{right:2%;height:65%}
-.balloon{position:absolute;width:38px;height:50px;border-radius:50% 50% 45% 45%;background:linear-gradient(90deg,#f46e8a 0 33%,#ffd76b 33% 66%,#6cc9ff 66%);box-shadow:0 5px 15px #0002}
-.balloon:after{content:"";position:absolute;left:18px;top:50px;width:2px;height:28px;background:#795}
-.b1{top:16%;left:13%;transform:scale(.8)}.b2{top:10%;right:12%;transform:scale(.65)}.b3{top:27%;right:28%;transform:scale(.5)}
-.cloud{position:absolute;width:110px;height:32px;background:#fff;border-radius:40px;opacity:.8;filter:blur(.3px)}
-.cloud:before,.cloud:after{content:"";position:absolute;background:#fff;border-radius:50%}.cloud:before{width:50px;height:50px;left:18px;top:-22px}.cloud:after{width:55px;height:55px;right:14px;top:-28px}
-.c1{top:14%;left:-20px}.c2{top:19%;right:-25px;transform:scale(.75)}
-.roadwrap{position:absolute;left:50%;bottom:-12%;width:108%;height:70%;transform:translateX(-50%);perspective:480px}
-.road{position:absolute;inset:0;transform:rotateX(58deg);transform-origin:bottom;clip-path:polygon(32% 0,68% 0,100% 100%,0 100%);background:linear-gradient(90deg,#38aaf2 0 33.1%,#ff7593 33.1% 66.4%,#5bd45d 66.4%);box-shadow:0 0 0 12px #f3d5bc}
-.road:after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent 32.7%,#fff 32.7% 33.4%,transparent 33.4% 66%,#fff 66% 66.7%,transparent 66.7%);opacity:.9}
-.hud{position:absolute;z-index:30;inset:12px 12px auto;display:flex;justify-content:space-between;align-items:flex-start;color:#fff;font-weight:1000}
-.pause,.score,.hearts,.shield{filter:drop-shadow(0 4px 2px #0003)}
-.pause{width:55px;height:55px;border-radius:50%;background:linear-gradient(#b57b43,#774420);border:4px solid #5d351e;display:grid;place-items:center;font-size:26px}
-.rightHud{text-align:right}.score{display:inline-block;background:#765f58;border-radius:24px;padding:7px 17px;font-size:22px}.coin{color:#ffd64f}
-.hearts{font-size:27px;margin-top:5px;letter-spacing:-4px}.shield{margin-top:4px;background:#596271cc;padding:5px 10px;border-radius:15px;font-size:14px}
-.logo{position:absolute;z-index:25;top:14px;left:50%;transform:translateX(-50%);width:min(58vw,420px);text-align:center;color:#fff;font-weight:1000;text-shadow:0 4px 0 #70441e,0 6px 12px #0005}
-.logo .wood{background:linear-gradient(#9a5c2b,#633716);border:4px solid #542d13;border-radius:18px;padding:4px 12px;box-shadow:inset 0 3px #d7924b}
-.logo b{font-size:clamp(21px,6vw,38px);color:#58baff}.logo b:first-letter{color:#ffc12e}.logo small{display:block;font-size:clamp(12px,3vw,18px)}
-.level{position:absolute;z-index:26;top:80px;left:8px;background:linear-gradient(#9b622d,#704016);border:4px solid #5a3217;border-radius:10px;color:white;text-align:center;font-weight:900;padding:5px 9px;box-shadow:0 4px 7px #0003;font-size:12px}
-.question{position:absolute;z-index:24;top:26%;left:50%;transform:translateX(-50%);min-width:48%;background:#fff;border:6px solid #ff72b3;border-radius:14px;padding:9px 24px;text-align:center;font-size:clamp(25px,8vw,43px);font-weight:1000;color:#2d1d2f;box-shadow:0 6px 0 #b84c83,0 9px 20px #0003}
-.question .emoji{font-size:.9em}
-.gates{position:absolute;z-index:20;top:38%;left:13%;right:13%;height:19%;display:flex;justify-content:space-between;gap:4%}
-.gate{position:relative;width:31%;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;color:white;font-weight:1000;font-size:clamp(16px,5vw,27px);text-shadow:0 2px 2px #0004;border-radius:8px 8px 2px 2px;box-shadow:inset 0 0 0 5px #ffffff22,0 8px 0 #0003}
-.gate:before{content:"";position:absolute;inset:0;border-radius:8px;background:repeating-linear-gradient(0deg,transparent 0 16px,#ffffff25 16px 18px),repeating-linear-gradient(90deg,transparent 0 25px,#ffffff20 25px 27px)}
-.gate span{position:relative;z-index:2}.gate .ico{font-size:clamp(24px,8vw,46px);margin-top:5px}
-.blue{background:#249bea}.red{background:#ef5365}.green{background:#3fc64e}
-.runner{position:absolute;z-index:22;bottom:17%;left:50%;width:92px;height:155px;transform:translateX(-50%);transition:left .16s cubic-bezier(.2,.9,.2,1);filter:drop-shadow(0 10px 5px #0003)}
-.hair{position:absolute;top:0;left:15px;width:64px;height:60px;background:#7a3e27;border-radius:50% 50% 45% 45%}
-.pony{position:absolute;top:14px;left:-4px;width:42px;height:55px;background:#6c351f;border-radius:70% 20% 70% 30%;transform:rotate(25deg);animation:pony .35s infinite alternate}
-.bow{position:absolute;top:5px;left:34px;font-size:29px;z-index:5}
-.head{position:absolute;top:25px;left:27px;width:43px;height:48px;background:#f5b58d;border-radius:45%;z-index:2}
-.body{position:absolute;top:67px;left:22px;width:53px;height:54px;background:#ff7daf;border-radius:16px 16px 8px 8px;z-index:3}
-.pack{position:absolute;top:75px;left:29px;width:40px;height:39px;background:#f5b4bd;border:3px solid #d98293;border-radius:8px;z-index:4;text-align:center;font-size:20px}
-.arm{position:absolute;top:73px;width:14px;height:45px;background:#f3ae84;border-radius:9px;transform-origin:top;animation:arm .34s infinite alternate}.a1{left:14px}.a2{right:8px;animation-direction:alternate-reverse}
-.leg{position:absolute;top:113px;width:18px;height:39px;background:#315d8b;border-radius:9px;transform-origin:top;animation:leg .34s infinite alternate}.l1{left:27px}.l2{left:54px;animation-direction:alternate-reverse}
-.shoe{position:absolute;bottom:-4px;width:25px;height:13px;background:#fff;border:3px solid #ff9fb4;border-radius:10px}
-@keyframes leg{to{transform:rotate(20deg) translateY(4px)}}@keyframes arm{to{transform:rotate(25deg)}}@keyframes pony{to{transform:rotate(10deg) translateX(-5px)}}
-.controls{position:absolute;z-index:35;bottom:14px;left:5%;right:5%;display:flex;justify-content:space-between}
-.btn{width:27vw;max-width:130px;height:76px;border-radius:25px;border:4px solid #fff;background:#ffffffd9;color:#fff;font-size:43px;font-weight:1000;box-shadow:0 7px 0 #0002;text-shadow:0 3px 2px #0002}
-.btn:nth-child(1){background:#38aaf2dd}.btn:nth-child(2){background:#ff7593dd}.btn:nth-child(3){background:#5bd45ddd}.btn:active{transform:translateY(5px);box-shadow:0 2px 0 #0002}
-.toast{position:absolute;z-index:60;left:50%;top:50%;transform:translate(-50%,-50%) scale(0);background:#fff;padding:18px 25px;border-radius:24px;font-size:25px;font-weight:1000;box-shadow:0 10px 30px #0005;transition:.18s;text-align:center}.toast.show{transform:translate(-50%,-50%) scale(1)}
-.finish{position:absolute;z-index:80;inset:0;background:#553b80e8;display:none;place-items:center;padding:25px}.finish.show{display:grid}.card{background:#fff;border-radius:28px;padding:28px;text-align:center;color:#543c72;max-width:400px}.card button{border:0;border-radius:18px;background:#ff68a4;color:#fff;font-weight:900;padding:13px 25px;font-size:18px}
-</style></head>
-<body><div id="game">
-<div class="bg"><div class="cloud c1"></div><div class="cloud c2"></div><div class="balloon b1"></div><div class="balloon b2"></div><div class="balloon b3"></div><div class="castle"><i class="tower t1"></i><i class="tower t2"></i><i class="tower t3"></i><i class="tower t4"></i></div></div>
-<div class="roadwrap"><div class="road"></div></div>
-<div class="hud"><div class="pause">Ⅱ</div><div class="rightHud"><div class="score"><span class="coin">🪙</span> <span id="score">0</span></div><div class="hearts" id="hearts">❤️❤️❤️</div><div class="shield">🛡️ ไม่มีโล่</div></div></div>
-<div class="logo"><div class="wood"><b>3D Word Runner</b><small>ตะลุยกำแพงคำศัพท์!</small></div></div>
-<div class="level">LEVEL 1<br>โหมดฝึกสอน<br>กำแพงที่ <span id="p">1</span> / 10</div>
-<div class="question" id="question"></div>
-<div class="gates" id="gates"></div>
-<div class="runner" id="runner"><div class="pony"></div><div class="hair"></div><div class="bow">🎀</div><div class="head"></div><div class="body"></div><div class="pack">🐱</div><div class="arm a1"></div><div class="arm a2"></div><div class="leg l1"><i class="shoe"></i></div><div class="leg l2"><i class="shoe"></i></div></div>
-<div class="controls"><button class="btn" onclick="move(-1)">←</button><button class="btn" onclick="hit()">↑</button><button class="btn" onclick="move(1)">→</button></div>
-<div class="toast" id="toast"></div><div class="finish" id="finish"><div class="card"><h1>🏆 ผ่าน LEVEL 1!</h1><h2 id="final"></h2><p>เก่งขึ้นได้ทุกวัน สู้ ๆ นะ!</p><button onclick="location.reload()">เล่นอีกครั้ง</button></div></div>
+html,body{margin:0;width:100%;height:100%;overflow:hidden;background:#8ed9ff;font-family:system-ui,"Noto Sans Thai",sans-serif;touch-action:none}
+#game{position:fixed;inset:0} canvas{display:block;width:100%;height:100%}
+#ui{position:fixed;inset:0;pointer-events:none;color:#fff;text-shadow:0 2px 4px #0008}
+.logo{position:absolute;top:10px;left:50%;transform:translateX(-50%);background:linear-gradient(#a86a2c,#6c3c18);border:4px solid #5b3116;border-radius:18px;padding:6px 18px;text-align:center;font-weight:1000;white-space:nowrap}
+.logo b{font-size:clamp(22px,6vw,38px);color:#63c4ff}.logo small{display:block;font-size:13px}
+.level{position:absolute;top:18px;left:10px;background:#75451fdd;border:3px solid #512e15;border-radius:12px;padding:7px 9px;font-weight:900;font-size:12px;text-align:center}
+.status{position:absolute;top:18px;right:10px;text-align:right;font-weight:900}
+.score{background:#66545ddd;padding:6px 12px;border-radius:18px}.hearts{font-size:25px;margin-top:5px}.shield{background:#4f6175dd;padding:5px 10px;border-radius:15px;margin-top:4px;font-size:13px}
+.word{position:absolute;top:20%;left:50%;transform:translateX(-50%);background:#fff;color:#28132c;text-shadow:none;border:6px solid #ff68ad;border-radius:16px;box-shadow:0 7px 0 #c44f88;padding:7px 32px;font-size:clamp(30px,9vw,52px);font-weight:1000;min-width:45%;text-align:center}
+.tip{position:absolute;bottom:18px;left:50%;transform:translateX(-50%);background:#213b5dbb;border:2px solid #ffffffaa;border-radius:20px;padding:8px 16px;font-weight:800;font-size:14px;white-space:nowrap}
+.msg{position:absolute;top:47%;left:50%;transform:translate(-50%,-50%) scale(0);background:#fff;color:#333;text-shadow:none;padding:14px 22px;border-radius:20px;font-size:24px;font-weight:1000;transition:.15s}
+.msg.show{transform:translate(-50%,-50%) scale(1)}
+#loading{position:fixed;inset:0;background:#82d4ff;display:grid;place-items:center;z-index:20;color:#263b55;font-weight:900;text-align:center;padding:30px}
+#end{position:fixed;inset:0;background:#47366cdd;display:none;place-items:center;z-index:30;padding:24px}
+.card{background:#fff;color:#3e3154;text-align:center;border-radius:25px;padding:25px;max-width:360px}
+.card button{pointer-events:auto;border:0;background:#ff65a4;color:white;border-radius:16px;padding:12px 24px;font-size:18px;font-weight:900}
+@media(max-width:520px){.logo{top:8px;padding:4px 10px}.logo small{display:none}.level{top:72px}.status{top:72px}.word{top:22%}}
+</style>
+</head>
+<body>
+<div id="game"></div>
+<div id="ui">
+ <div class="logo"><b>3D Word Runner</b><small>ตะลุยกำแพงคำศัพท์!</small></div>
+ <div class="level">LEVEL 1<br>กำแพงที่ <span id="progress">1</span> / 10</div>
+ <div class="status"><div class="score">⭐ <span id="score">0</span></div><div class="hearts" id="hearts">❤️❤️❤️</div><div class="shield" id="shield">🛡️ ไม่มีโล่</div></div>
+ <div class="word" id="word">CAT</div>
+ <div class="msg" id="msg"></div>
+ <div class="tip">👆 ปัดซ้าย–ขวาบนหน้าจอเพื่อเปลี่ยนเลน</div>
 </div>
-<script>
-const data=[
-["CAT","🐱",[["แมว","🐱"],["สุนัข","🐶"],["นก","🐦"]],0],
-["DOG","🐶",[["ปลา","🐟"],["สุนัข","🐶"],["แมว","🐱"]],1],
-["BIRD","🐦",[["นก","🐦"],["ม้า","🐴"],["หมู","🐷"]],0],
-["APPLE","🍎",[["กล้วย","🍌"],["ส้ม","🍊"],["แอปเปิล","🍎"]],2],
-["BOOK","📘",[["โต๊ะ","🪑"],["หนังสือ","📘"],["ดินสอ","✏️"]],1],
-["SUN","☀️",[["ดวงอาทิตย์","☀️"],["ดาว","⭐"],["ฝน","🌧️"]],0],
-["WATER","💧",[["นม","🥛"],["น้ำ","💧"],["ข้าว","🍚"]],1],
-["HAPPY","😊",[["เศร้า","😢"],["โกรธ","😠"],["มีความสุข","😊"]],2],
-["RUN","🏃",[["วิ่ง","🏃"],["นอน","🛌"],["นั่ง","🪑"]],0],
-["SCHOOL","🏫",[["บ้าน","🏠"],["โรงเรียน","🏫"],["ตลาด","🏪"]],1]
+<div id="loading">กำลังโหลดโลก 3D…<br><small>ครั้งแรกต้องเชื่อมต่ออินเทอร์เน็ต</small></div>
+<div id="end"><div class="card"><h1>🏆 จบรอบ!</h1><h2 id="final"></h2><p>เลือกความหมายให้ถูกต้องโดยปัดเปลี่ยนเลน</p><button id="restart">เล่นอีกครั้ง</button></div></div>
+
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js"}}</script>
+<script type="module">
+import * as THREE from 'three';
+
+const DATA=[
+ {w:"CAT",a:["แมว","สุนัข","นก"],ok:0},
+ {w:"DOG",a:["ปลา","สุนัข","แมว"],ok:1},
+ {w:"BIRD",a:["นก","ม้า","หมู"],ok:0},
+ {w:"APPLE",a:["กล้วย","ส้ม","แอปเปิล"],ok:2},
+ {w:"BOOK",a:["โต๊ะ","หนังสือ","ดินสอ"],ok:1},
+ {w:"SUN",a:["ดวงอาทิตย์","ดาว","ฝน"],ok:0},
+ {w:"WATER",a:["นม","น้ำ","ข้าว"],ok:1},
+ {w:"HAPPY",a:["เศร้า","โกรธ","มีความสุข"],ok:2},
+ {w:"RUN",a:["วิ่ง","นอน","นั่ง"],ok:0},
+ {w:"SCHOOL",a:["บ้าน","โรงเรียน","ตลาด"],ok:1}
 ];
-let i=0,lane=1,score=0,lives=3,lock=false;
-const runner=document.getElementById("runner"),toast=document.getElementById("toast");
-function setLane(){runner.style.left=[25,50,75][lane]+"%"}
-function render(){let q=data[i];document.getElementById("question").innerHTML=q[0]+' <span class="emoji">'+q[1]+'</span>';document.getElementById("p").textContent=i+1;document.getElementById("gates").innerHTML=q[2].map((a,j)=>`<div class="gate ${["blue","red","green"][j]}"><span>${a[0]}</span><span class="ico">${a[1]}</span></div>`).join("");setLane()}
-function move(d){if(lock)return;lane=Math.max(0,Math.min(2,lane+d));setLane()}
-function pop(t){toast.innerHTML=t;toast.classList.add("show");setTimeout(()=>toast.classList.remove("show"),650)}
-function hit(){if(lock)return;lock=true;let ok=lane===data[i][3];if(ok){score+=10;document.getElementById("score").textContent=score;pop("✨ ถูกต้อง! +10 🪙")}else{lives--;document.getElementById("hearts").textContent="❤️".repeat(Math.max(0,lives))+"🖤".repeat(3-Math.max(0,lives));pop("💥 ผิดจ้า!");}
-setTimeout(()=>{i++;lock=false;if(lives<=0||i>=data.length){document.getElementById("final").textContent="คะแนน "+score+" / 100";document.getElementById("finish").classList.add("show")}else render()},750)}
-document.addEventListener("keydown",e=>{if(e.key==="ArrowLeft")move(-1);if(e.key==="ArrowRight")move(1);if(e.key==="ArrowUp"||e.key==="Enter")hit()});
-let sx=0;document.addEventListener("touchstart",e=>sx=e.touches[0].clientX,{passive:true});document.addEventListener("touchend",e=>{let dx=e.changedTouches[0].clientX-sx;if(Math.abs(dx)>45)move(dx>0?1:-1)},{passive:true});
-render();
-</script></body></html>
+const lanes=[-2.45,0,2.45];
+let scene,camera,renderer,runner,road=[],walls=[],shieldItem=null;
+let lane=1,targetX=0,q=0,score=0,lives=3,hasShield=false,paused=false,last=0;
+let wallZ=-36, shieldSpawned=false;
+const $=id=>document.getElementById(id);
+
+function mat(c,rough=.65){return new THREE.MeshStandardMaterial({color:c,roughness:rough,metalness:.03})}
+function box(w,h,d,c){const m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat(c));m.castShadow=true;m.receiveShadow=true;return m}
+function sphere(r,c){const m=new THREE.Mesh(new THREE.SphereGeometry(r,20,16),mat(c));m.castShadow=true;return m}
+function textTexture(txt,bg="#168be0"){
+ const c=document.createElement("canvas");c.width=512;c.height=256;const x=c.getContext("2d");
+ x.fillStyle=bg;x.fillRect(0,0,c.width,c.height);x.strokeStyle="#ffffff55";x.lineWidth=14;x.strokeRect(8,8,496,240);
+ x.fillStyle="white";x.font='900 74px system-ui, "Noto Sans Thai", sans-serif';x.textAlign="center";x.textBaseline="middle";
+ x.fillText(txt,256,128,450);const t=new THREE.CanvasTexture(c);t.colorSpace=THREE.SRGBColorSpace;return t;
+}
+function init(){
+ scene=new THREE.Scene();scene.background=new THREE.Color(0x80d5ff);scene.fog=new THREE.Fog(0xaddfff,28,75);
+ camera=new THREE.PerspectiveCamera(55,innerWidth/innerHeight,.1,120);camera.position.set(0,4.5,8.2);camera.lookAt(0,1,-9);
+ renderer=new THREE.WebGLRenderer({antialias:true,powerPreference:"high-performance"});
+ renderer.setPixelRatio(Math.min(devicePixelRatio,1.7));renderer.setSize(innerWidth,innerHeight);renderer.shadowMap.enabled=true;
+ renderer.shadowMap.type=THREE.PCFSoftShadowMap;$("game").appendChild(renderer.domElement);
+ scene.add(new THREE.HemisphereLight(0xffffff,0x88a76a,2.4));
+ const sun=new THREE.DirectionalLight(0xffffff,2.8);sun.position.set(-5,12,7);sun.castShadow=true;sun.shadow.mapSize.set(1024,1024);scene.add(sun);
+ makeWorld();makeRunner();spawnQuestion();bind();$("loading").style.display="none";requestAnimationFrame(loop);
+}
+function makeWorld(){
+ const colors=[0x29a7f2,0xff6f91,0x55d567];
+ for(let s=0;s<12;s++){
+  const g=new THREE.Group();g.position.z=-s*8;
+  for(let j=0;j<3;j++){const p=box(2.35,.12,7.7,colors[j]);p.position.set(lanes[j],0,0);g.add(p)}
+  for(let j=0;j<2;j++){const rail=box(.16,.5,7.7,0xe9c8a9);rail.position.set(j?3.72:-3.72,.32,0);g.add(rail)}
+  scene.add(g);road.push(g);
+ }
+ // fantasy towers / clouds
+ for(let i=0;i<18;i++){
+  const side=i%2?1:-1,z=-8-i*5;
+  const island=sphere(1.4,0x79bd69);island.scale.y=.45;island.position.set(side*(5+Math.random()*2),-.2,z);scene.add(island);
+  if(i%3===0){const t=box(1.1,2.5,1.1,0xe8c8aa);t.position.set(side*(5+Math.random()),1.1,z);scene.add(t);const roof=new THREE.Mesh(new THREE.ConeGeometry(.9,1.5,4),mat(0x9a70d8));roof.position.set(t.position.x,3.1,z);roof.rotation.y=.78;scene.add(roof)}
+ }
+}
+function makeRunner(){
+ runner=new THREE.Group();
+ const skin=mat(0xf3b18c),hair=mat(0x71371f),pink=mat(0xff79a9),denim=mat(0x315f8f),white=mat(0xffffff);
+ const head=sphere(.43,0xf3b18c);head.position.y=2.15;runner.add(head);
+ const h=sphere(.48,0x71371f);h.scale.set(1.05,.85,1);h.position.set(0,2.35,.08);runner.add(h);
+ const pony=sphere(.38,0x71371f);pony.scale.set(1.2,1.6,.8);pony.position.set(-.48,2.25,.1);runner.add(pony);
+ const body=box(.82,.85,.48,0xff79a9);body.position.y=1.48;runner.add(body);
+ const pack=box(.58,.62,.22,0xf5a8ba);pack.position.set(0,1.5,.35);runner.add(pack);
+ const badge=sphere(.16,0xffffff);badge.scale.z=.35;badge.position.set(0,1.52,.49);runner.add(badge);
+ const bow1=new THREE.Mesh(new THREE.ConeGeometry(.24,.42,4),pink);bow1.position.set(-.16,2.62,.05);bow1.rotation.z=-1.5;runner.add(bow1);
+ const bow2=bow1.clone();bow2.position.x=.16;bow2.rotation.z=1.5;runner.add(bow2);
+ for(let s of [-1,1]){
+  const arm=box(.18,.72,.18,0xf3b18c);arm.position.set(s*.53,1.48,0);arm.userData.side=s;runner.add(arm);
+  const leg=box(.24,.82,.25,0x315f8f);leg.position.set(s*.23,.72,0);leg.userData.leg=s;runner.add(leg);
+  const shoe=box(.3,.18,.48,0xffffff);shoe.position.set(s*.23,.25,-.08);shoe.userData.shoe=s;runner.add(shoe);
+ }
+ runner.position.set(0,.12,2.1);runner.rotation.y=Math.PI;scene.add(runner);
+}
+function spawnQuestion(){
+ if(q>=DATA.length){finish();return}
+ $("word").textContent=DATA[q].w;$("progress").textContent=q+1;
+ walls.forEach(w=>scene.remove(w));walls=[];wallZ=-36;
+ const colors=["#168be0","#ed5367","#36bf52"];
+ DATA[q].a.forEach((ans,j)=>{
+  const g=new THREE.Group();const wall=box(2.1,2.35,.55,[0x168be0,0xed5367,0x36bf52][j]);wall.position.y=1.2;g.add(wall);
+  const plane=new THREE.Mesh(new THREE.PlaneGeometry(1.95,.95),new THREE.MeshBasicMaterial({map:textTexture(ans,colors[j]),transparent:false}));
+  plane.position.set(0,1.35,.286);g.add(plane);g.position.set(lanes[j],0,wallZ);scene.add(g);walls.push(g);
+ });
+ // exactly one shield opportunity per 10-wall round, random question and random lane
+ if(!shieldSpawned && q===Math.floor(Math.random()*Math.max(1,DATA.length-q))){
+   spawnShield();
+ }
+}
+function spawnShield(){
+ shieldSpawned=true;const g=new THREE.Group();const ring=new THREE.Mesh(new THREE.TorusGeometry(.48,.12,12,30),mat(0xffd35b));g.add(ring);
+ const core=box(.48,.62,.15,0x89b7d9);core.rotation.z=.0;g.add(core);g.position.set(lanes[Math.floor(Math.random()*3)],1,-17);scene.add(g);shieldItem=g;
+}
+function move(d){lane=Math.max(0,Math.min(2,lane+d));targetX=lanes[lane]}
+function bind(){
+ let sx=0,sy=0,down=false;
+ addEventListener("pointerdown",e=>{sx=e.clientX;sy=e.clientY;down=true});
+ addEventListener("pointerup",e=>{if(!down)return;down=false;const dx=e.clientX-sx,dy=e.clientY-sy;if(Math.abs(dx)>35&&Math.abs(dx)>Math.abs(dy)){move(dx>0?1:-1)}});
+ addEventListener("keydown",e=>{if(e.key==="ArrowLeft")move(-1);if(e.key==="ArrowRight")move(1)});
+ addEventListener("resize",()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight)});
+ $("restart").addEventListener("click",()=>location.reload());
+}
+function flash(t){const m=$("msg");m.textContent=t;m.classList.add("show");setTimeout(()=>m.classList.remove("show"),650)}
+function collide(){
+ const correct=lane===DATA[q].ok;
+ if(correct){score+=10;flash("✨ ถูกต้อง! +10")}
+ else if(hasShield){hasShield=false;flash("🛡️ โล่ป้องกันคะแนน!");$("shield").textContent="🛡️ ไม่มีโล่"}
+ else{score=Math.max(0,score-5);lives--;flash("💥 ผิด -5");$("hearts").textContent="❤️".repeat(Math.max(0,lives))+"🖤".repeat(3-Math.max(0,lives))}
+ $("score").textContent=score;q++;if(lives<=0){finish();return}spawnQuestion();
+}
+function finish(){paused=true;$("final").textContent=`คะแนน ${score} คะแนน`;$("end").style.display="grid"}
+function loop(t){
+ const dt=Math.min(.04,(t-last)/1000||.016);last=t;
+ if(!paused){
+  runner.position.x+=(targetX-runner.position.x)*Math.min(1,dt*13);
+  const run=t*.012;runner.children.forEach(o=>{if(o.userData.leg)o.rotation.x=Math.sin(run*2+o.userData.leg)*.55;if(o.userData.side)o.rotation.x=Math.sin(run*2-o.userData.side)*.45});
+  runner.position.y=.12+Math.abs(Math.sin(run*2))*.05;
+  road.forEach(g=>{g.position.z+=dt*13;if(g.position.z>8)g.position.z-=96});
+  walls.forEach(g=>g.position.z+=dt*13);
+  if(walls[0]&&walls[0].position.z>1.0)collide();
+  if(shieldItem){
+    shieldItem.position.z+=dt*13;shieldItem.rotation.y+=dt*2.5;
+    if(shieldItem.position.z>1.1&&shieldItem.position.z<3.2&&Math.abs(shieldItem.position.x-runner.position.x)<1.0){
+      hasShield=true;$("shield").textContent="🛡️ มีโล่ 1 ครั้ง";flash("🛡️ ได้โล่ป้องกัน!");scene.remove(shieldItem);shieldItem=null;
+    } else if(shieldItem.position.z>4){scene.remove(shieldItem);shieldItem=null}
+  }
+ }
+ renderer.render(scene,camera);requestAnimationFrame(loop);
+}
+init();
+</script>
+</body>
+</html>
